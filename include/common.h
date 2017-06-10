@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <stdlib.h>
+#include <math.h>
 
 
 inline int rand_int(int high)
@@ -22,6 +23,38 @@ inline float rand_float()
 std::vector<int> rand_int(int low,int high,int size);
 std::vector<int> range(int high);
 
+template<typename Dtype>
+void argmax(const std::vector<Dtype>& a,Dtype*max,int*arg)
+{
+	Dtype m = a[0];
+	int n=0;
+	for(int i=1;i<a.size();i++)
+	{
+		if(a[i]>m)
+		{
+			m = a[i];
+			n = i;	
+		}
+	}
+	*max = m;
+	*arg = n;
+}
+template<typename Dtype>
+void argmin(const std::vector<Dtype>& a,Dtype*min,int*arg)
+{
+	Dtype m = a[0];
+	int n=0;
+	for(int i=1;i<a.size();i++)
+	{
+		if(a[i]<m)
+		{
+			m = a[i];
+			n = i;	
+		}
+	}
+	*min = m;
+	*arg = n;
+}
 template<typename Dtype>
 std::vector<Dtype> shuffle(const std::vector<Dtype> &a)
 {
@@ -53,5 +86,4 @@ std::vector<Dtype> choice(const std::vector<Dtype> &a,int size)
 	}
 	return r;	
 }
-
 #endif

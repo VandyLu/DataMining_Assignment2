@@ -1,16 +1,15 @@
 #include "input.h"
-#include <glog/logging.h>
 
 using namespace std;
 
-void Dataset::load(const string &dbpath)
+bool Dataset::load(const string &dbpath)
 {
-	load(dbpath.c_str());
+	return load(dbpath.c_str());
 }
-void Dataset::load(const char* dbpath)
+bool Dataset::load(const char* dbpath)
 {
 	ifstream in(dbpath);
-	CHECK(in.is_open()) << "Reading dataset failed!";
+	//CHECK(in.is_open()) << "Reading dataset failed!";
 
 	int index;
 	char c;
@@ -21,6 +20,7 @@ void Dataset::load(const char* dbpath)
 		push(index,x,y,z);
 	}
 	in.close();
+	return true;
 }
 int Dataset::push(int i,float x,float y,float z)
 {
@@ -36,4 +36,9 @@ void Dataset::printData()
 	}
 	cout << "Total records:" << data.size() << endl;
 }
+void Record::printData()
+{
+	cout << index << ',' << x << ',' << y <<',' << z <<endl;
+}
+
 

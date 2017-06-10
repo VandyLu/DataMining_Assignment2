@@ -1,29 +1,21 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <glog/logging.h>
-#include <gflags/gflags.h>
 #include "input.h"
 #include "common.h"
 #include <map>
-
-DEFINE_string(opt,"input",
-		"input -- test data input"
-		"test -- test a model"
-		"convert -- convert ascii file to binary file");
-DEFINE_string(in_path,"","file path");
+#include "cluster.h"
 
 
 int test(void);
 int input(void);
+int cluster(void);
 
 
+std::string FLAGS_opt("cluster");
+std::string FLAGS_in_path("data/3D_spatial_network.txt");
 int main(int argc,char *argv[])
 {
-	google::ParseCommandLineFlags(&argc,&argv,true);
-	google::InitGoogleLogging(argv[0]);
-
-	FLAGS_log_dir = "./log";
 	std::cout << "Desired operation:"<< FLAGS_opt << std::endl; 
 	if(FLAGS_opt == "input")
 	{
@@ -31,9 +23,10 @@ int main(int argc,char *argv[])
 	}else if(FLAGS_opt == "test")
 	{
 		test();
+	}else if(FLAGS_opt == "cluster")
+	{
+		cluster();
 	}
-
-	
 	return 0;	
 }
 int test(void)
@@ -68,5 +61,12 @@ int input(void)
 	Dataset dataset;
 	dataset.load(FLAGS_in_path);
 	dataset.printData();
+	return 0;
+}
+int cluster(void)
+{
+	Cluster kmeans;
+	kmeans.load(FLAGS_in_path);
+	kmeans.train(10);
 	return 0;
 }

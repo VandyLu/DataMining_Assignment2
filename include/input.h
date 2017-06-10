@@ -12,6 +12,7 @@ public:
 	int index;
 	float x,y,z;
 	Record(int i=0,float _x=0,float _y=0,float _z=0):index(i),x(_x),y(_y),z(_z){}
+	void printData();
 };
 class Dataset{
 		private:
@@ -20,11 +21,12 @@ class Dataset{
 	Dataset(){}
 	~Dataset(){}
 
-	void load(const std::string &dbpath);
-	void load(const char* c);
+	bool load(const std::string &dbpath);
+	bool load(const char* c);
 	int push(int i,float x,float y,float z);
 	std::vector<Record>& get_data() { return data;}
 	void printData();
+	int size()const{ return data.size();}
 	
 };
 
