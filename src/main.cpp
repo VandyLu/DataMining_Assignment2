@@ -17,6 +17,7 @@ std::string FLAGS_in_path("data/3D_spatial_network.txt");
 int main(int argc,char *argv[])
 {
 	std::cout << "Desired operation:"<< FLAGS_opt << std::endl; 
+
 	if(FLAGS_opt == "input")
 	{
 		input();
@@ -31,6 +32,17 @@ int main(int argc,char *argv[])
 }
 int test(void)
 {
+		Record r(12,3.0,4.0,5.0);
+		std::cout << r.ToString() << std::endl;
+		Writer w(std::string("test.txt"));
+		std::vector<std::vector<Record> > clusters(2);
+		clusters[0].push_back(r);
+		clusters[0].push_back(r);
+		clusters[1].push_back(r);
+		r.x = 10;
+		clusters[1].push_back(r);
+		w.write(clusters);
+
 	std::cout << "rand_int(10)" << std::endl;
 	for(int i=0;i<10;i++)
 		std::cout << rand_int(10) << ',';
@@ -68,5 +80,6 @@ int cluster(void)
 	Cluster kmeans;
 	kmeans.load(FLAGS_in_path);
 	kmeans.train(10);
+	std::cout << kmeans.output("data_for_python/r.txt") << std::endl;
 	return 0;
 }

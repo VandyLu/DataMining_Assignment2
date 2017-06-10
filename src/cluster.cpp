@@ -33,6 +33,7 @@ void Cluster::train(int n_center)
 		}
 	}
 	
+	std::cout << "Cluster Done"<<std::endl;
 	for(int i=0;i<clusters.size();i++)
 	{
 		std::cout << "cluster: "<< i+1 << " size: "<<clusters[i].size()<< std::endl;
@@ -43,7 +44,8 @@ void Cluster::train(int n_center)
 		//}
 		//std::cout << "****************************"<<std::endl;
 	}
-	std::cout << "Cluster Done"<<std::endl;
+	_clusters = clusters;
+	_clusterOf = clusterOf;
 }
 /*
 std::vector<float> Cluster::SSE(const std::vector<Record> &centers,const std::vector<Record>&dataset)const
@@ -94,3 +96,8 @@ Record Cluster::mean(const std::vector<Record>& a)const
 	return r;
 }
 
+bool Cluster::output(const std::string& outpath)const
+{
+	Writer w(outpath);
+	return w.write(_clusters);
+}

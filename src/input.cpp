@@ -36,9 +36,28 @@ void Dataset::printData()
 	}
 	cout << "Total records:" << data.size() << endl;
 }
-void Record::printData()
+void Record::printData()const
 {
-	cout << index << ',' << x << ',' << y <<',' << z <<endl;
+	cout << ToString() << endl;
 }
 
+string Record::ToString()const
+{
+	ostringstream ostr;
+	ostr << index << ',' << x << ',' << y <<',' << z;
+	return ostr.str();
+}
 
+bool Writer::write(const std::vector<std::vector<Record> >& clusters)
+{
+	ofstream out(path.c_str());
+	if(!out.is_open())return false;
+	for(int i=0;i<clusters.size();i++)
+	{
+		for(int j=0;j<clusters[i].size();j++)
+		{
+			out << clusters[i][j].ToString() << ","<< i<<endl;
+		}
+	}
+	return true;
+}
