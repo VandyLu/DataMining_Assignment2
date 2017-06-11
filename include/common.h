@@ -4,7 +4,12 @@
 #include <vector>
 #include <stdlib.h>
 #include <math.h>
+#include <GL/glut.h>
+#include <glog/logging.h>
+#include <gflags/gflags.h>
 
+
+void toSphere(float r,float lon,float lat,float h,float *x,float *y,float *z);
 
 inline int rand_int(int high)
 {

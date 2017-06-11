@@ -1,5 +1,16 @@
 #include "common.h"
+#include <math.h>
 
+void toSphere(float r,float lon,float lat,float h,float *x,float *y,float *z)
+{
+	const float pi = 3.1415926;
+	float R = r+h;
+	lon *= (pi/180);
+	lat *= (pi/180);
+	*z = sin(lat)*R;
+	*x = cos(lat)*R*sin(lon);
+	*y = cos(lat)*R*cos(lon);
+}
 
 std::vector<int> rand_int(int low,int high,int size)
 {

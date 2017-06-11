@@ -1,8 +1,99 @@
 #include "cluster.h"
+#include <GL/glut.h>
+#include <glog/logging.h>
+#include <gflags/gflags.h>
+#include "display.h"
 
+Cluster::Cluster()
+{
+	n_center = 1;
+	colors = std::vector<std::vector<float> >(n_center);
+	for(int i=0;i<n_center;i++)
+	{
+		colors[i] = std::vector<float>(3);
+		colors[i][0] = rand_float();
+		colors[i][1] = rand_float();
+		colors[i][2] = rand_float();
+	}
+}
+void Cluster::gl_start(int n_center)
+{
+	CHECK_GT(n_center,1) << "cluster centers should be more than 1";
+	this->n_center = n_center;
+	gl_data = dataset.get_data();
+	gl_centers = choice(gl_data,n_center);
+	gl_clusterOf = std::vector<int>(gl_data.size());
+	gl_clusterOf_last = std::vector<int>(gl_data.size());
+	gl_clusters = std::vector<std::vector<Record> >(n_center);
+
+	colors = std::vector<std::vector<float> >(n_center);
+	for(int i=0;i<n_center;i++)
+	{
+		colors[i] = std::vector<float>(3);
+		colors[i][0] = rand_float();
+		colors[i][1] = rand_float();
+		colors[i][2] = rand_float();
+	}
+
+	float xmax,xmin,ymax,ymin,zmax,zmin;
+	xmin = xmax = gl_data[0].x;
+	ymin = ymax = gl_data[0].y;
+	zmin = zmax = gl_data[0].z;
+
+	for(int i=1;i<gl_data.size();i++)
+	{
+		if(gl_data[i].x > xmax) xmax = gl_data[i].x;	
+		if(gl_data[i].x < xmin) xmin = gl_data[i].x;	
+		if(gl_data[i].y > ymax) ymax = gl_data[i].y;	
+		if(gl_data[i].y < ymin) ymin = gl_data[i].y;	
+		if(gl_data[i].z > zmax) zmax = gl_data[i].z;	
+		if(gl_data[i].z < zmin) zmin = gl_data[i].z;	
+	}
+	float bmin[3];
+	float bmax[3];
+	bmin[0] = xmin; bmin[1] = ymin; bmin[2] = zmin;
+	bmax[0] = xmax; bmax[1] = ymax; bmax[2] = zmax;
+	SetBoundaryBox(bmin,bmax);
+
+	gl_change = true;
+	gl_done = false;
+	gl_iter = 0;
+	gl_step(1);
+}
+bool Cluster::gl_step(int n)
+{
+	for(int q=0;q<n;q++)
+	{
+		if(gl_done)break;
+		gl_iter++;
+		std::cout << "Iter:" << gl_iter << std::endl;
+		assign(gl_centers,gl_data,gl_clusterOf,gl_clusters);
+
+		gl_change = false;
+		for(int i=0;i<gl_data.size();i++)
+			if(gl_clusterOf[i] != gl_clusterOf_last[i])
+			{
+				gl_change = true;
+				break;	
+			}
+		gl_clusterOf_last = gl_clusterOf;
+		if(gl_change) // center should be updated
+		{
+			for(int i=0;i<gl_clusters.size();i++)
+				gl_centers[i] = mean(gl_clusters[i]);	
+		}else{
+			gl_done = true;
+		}
+	}
+	//gl_data[0].printData();
+	//gl_data[1].printData();
+	_clusters = gl_clusters;
+	_clusterOf = gl_clusterOf;
+	return gl_done;
+}		
 void Cluster::train(int n_center)
 {
-
+	CHECK_GT(n_center,1) << "cluster centers should be more than 1";
 	// pick centers randomly
 	std::vector<Record> data = dataset.get_data();
 	
@@ -16,7 +107,6 @@ void Cluster::train(int n_center)
 	{
 		iter++;
 		std::cout << "Iter:" << iter << std::endl;
-		if(iter>10)break;
 		assign(centers,data,clusterOf,clusters);
 
 		change = false;
@@ -26,6 +116,7 @@ void Cluster::train(int n_center)
 				change = true;
 				break;	
 			}
+		clusterOf_last = clusterOf;
 		if(change) // center should be updated
 		{
 			for(int i=0;i<clusters.size();i++)
@@ -101,3 +192,23 @@ bool Cluster::output(const std::string& outpath)const
 	Writer w(outpath);
 	return w.write(_clusters);
 }
+
+void Cluster::draw()const
+{
+	glShadeModel(GL_FLAT); 
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPointSize(3);
+	glBegin(GL_POINTS);
+	for(int i=0;i<_clusters.size();i++)
+	{
+		//glColor3f(rand_float(),rand_float(),rand_float());
+		glColor3f(colors[i][0],colors[i][1],colors[i][2]);
+		for(int j=0;j<_clusters[i].size();j++)
+			glVertex3d(_clusters[i][j].x,_clusters[i][j].y,_clusters[i][j].z);
+	}	
+	
+	glEnd();
+	glDisable(GL_POLYGON_OFFSET_FILL);
+	
+}
+

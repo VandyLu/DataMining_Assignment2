@@ -1,4 +1,5 @@
 #include "input.h"
+#include "common.h"
 
 using namespace std;
 
@@ -13,10 +14,17 @@ bool Dataset::load(const char* dbpath)
 
 	int index;
 	char c;
+	float lon,lat,h;
 	float x,y,z;
+	float R = 6371004; //m
 	while(!in.eof())
 	{
-		in >> index >> c >> x >> c >> y >> c >> z;
+		in >> index >> c >> lon >> c >> lat >> c >> h;
+		toSphere(R,lon,lat,h,&x,&y,&z);
+		// regularize
+		x /= R;
+		y /= R;
+		z /= R;
 		push(index,x,y,z);
 	}
 	in.close();

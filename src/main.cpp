@@ -5,22 +5,42 @@
 #include "common.h"
 #include <map>
 #include "cluster.h"
+#include "display.h"
 
+int mode = KMEANS;
+Cluster kmeans;
 
 int test(void);
 int input(void);
 int cluster(void);
 
 
-std::string FLAGS_opt("cluster");
-std::string FLAGS_in_path("data/3D_spatial_network.txt");
+DEFINE_string(opt,"test",
+				"test for some testing"
+				"cluster for clustering"
+				"gl for OpenGL plotting");
+DEFINE_string(in_path,"data/3D_spatial_network.txt","dataset path");
+DEFINE_string(out_path,"data_for_python/r.txt","info out path");
+DEFINE_int32(n,10,"centers for clustering");
+
+
+//std::string FLAGS_opt("cluster");
+//std::string FLAGS_in_path("data/3D_spatial_network.txt");
 int main(int argc,char *argv[])
 {
-	std::cout << "Desired operation:"<< FLAGS_opt << std::endl; 
+	google::InitGoogleLogging(argv[0]);
+	google::ParseCommandLineFlags(&argc,&argv,true);
+	// for showing data
+	glutInit(&argc,argv);
 
-	if(FLAGS_opt == "input")
+	std::cout << "Desired operation:"<< FLAGS_opt << std::endl; 
+//	FLAGS_opt = std::string("gl");
+
+	if(FLAGS_opt == "gl")
 	{
-		input();
+		InitGL();
+		InitMenu();
+		glutMainLoop();		
 	}else if(FLAGS_opt == "test")
 	{
 		test();
@@ -30,6 +50,42 @@ int main(int argc,char *argv[])
 	}
 	return 0;	
 }
+
+// GLUT menu callback function
+void MenuCallback(int value) {
+	switch (value) {
+	case 99: exit(0); break;
+	case KMEANS:
+	{
+		kmeans.load(FLAGS_in_path);
+		kmeans.gl_start(FLAGS_n);
+		//kmeans.train(10);
+		//CHECK(kmeans.output(FLAGS_out_path)) << "Output failed";
+		break;
+	}
+	default: 
+		mode = value;
+				glutPostRedisplay();
+		break;
+	}
+}
+// GLUT keyboard callback function
+void KeyboardFunc(unsigned char ch, int x, int y) { 
+	switch (ch) { 
+	case 'c':
+			while(!kmeans.gl_step(1));
+			break;
+	case 'n':kmeans.gl_step(1);break;
+	case 27:
+		exit(0);
+		break;
+	}
+	glutPostRedisplay();
+}
+
+void DrawKmeans() {
+	kmeans.draw();
+	}
 int test(void)
 {
 		Record r(12,3.0,4.0,5.0);
@@ -79,7 +135,7 @@ int cluster(void)
 {
 	Cluster kmeans;
 	kmeans.load(FLAGS_in_path);
-	kmeans.train(10);
-	std::cout << kmeans.output("data_for_python/r.txt") << std::endl;
+	kmeans.train(FLAGS_n);
+	CHECK(kmeans.output(FLAGS_out_path)) << "Output failed";
 	return 0;
 }
