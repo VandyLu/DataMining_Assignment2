@@ -11,8 +11,9 @@
 
 void toSphere(float r,float lon,float lat,float h,float *x,float *y,float *z);
 
-inline int rand_int(int high)
+inline int rand_int(int high=1)
 {
+	CHECK_GE(high,1) << "rand_int error";
 	return rand()%high;
 }
 inline int rand_int(int low,int high)
@@ -79,16 +80,48 @@ std::vector<Dtype> shuffle(const std::vector<Dtype> &a)
 template<typename Dtype>
 std::vector<Dtype> choice(const std::vector<Dtype> &a,int size)
 {
+	if(a.size()<=size)
+		return a;
+
 	std::vector<Dtype> tmp = a; // copy
 	std::vector<Dtype> r;
 
 	for(int i=0;i<size;i++)
 	{
-		int del = rand_int(tmp.size());
+		CHECK_GE(tmp.size(),1) << "choice error";
+		int del = rand_int((tmp.size()));
 		typename std::vector<Dtype>::iterator it = tmp.begin()+del;
 		r.push_back(*it);
 		tmp.erase(it);
 	}
 	return r;	
+}
+template<typename Dtype>
+void rmRow(std::vector<std::vector<Dtype> >& mat,int row)
+{
+	typename std::vector<std::vector<Dtype> >::iterator it = mat.begin()+row;
+	mat.erase(it);
+}
+template<typename Dtype>
+void rmCol(std::vector<std::vector<Dtype> >& mat,int col)
+{
+	for(int i=0;i<mat.size();i++)
+	{
+		typename std::vector<Dtype>::iterator it = mat[i].begin()+col;
+		mat[i].erase(it);
+	}
+}
+template<typename Dtype>
+void rmRowCol(std::vector<std::vector<Dtype> >& mat,int n)
+{
+	rmRow(mat,n);
+	rmCol(mat,n);
+}
+
+template<typename Dtype>
+void rmItem(std::vector<Dtype> &v,int n)
+{
+	typename std::vector<Dtype>::iterator it = v.begin()+n;
+	v.erase(it);
 }
 #endif

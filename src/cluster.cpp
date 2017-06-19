@@ -3,10 +3,15 @@
 #include <glog/logging.h>
 #include <gflags/gflags.h>
 #include "display.h"
+#include <iostream>
+#include <stdio.h>
+#include <fstream>
+
 
 Cluster::Cluster()
 {
 	n_center = 1;
+	global_done = false;
 	colors = std::vector<std::vector<float> >(n_center);
 	for(int i=0;i<n_center;i++)
 	{
@@ -83,16 +88,24 @@ bool Cluster::gl_step(int n)
 				gl_centers[i] = mean(gl_clusters[i]);	
 		}else{
 			gl_done = true;
+			global_done = true;
 		}
 	}
 	//gl_data[0].printData();
 	//gl_data[1].printData();
+	_centers = gl_centers;
 	_clusters = gl_clusters;
 	_clusterOf = gl_clusterOf;
 	return gl_done;
 }		
+
 void Cluster::train(int n_center)
 {
+	char name[100];
+	sprintf(name,"./result/Kmeans_result_n%d.txt",n_center);
+	std::ofstream out(name);
+	out << "Kmeans for " << n_center<< " centers"<<std::endl;
+	global_done = false;
 	CHECK_GT(n_center,1) << "cluster centers should be more than 1";
 	// pick centers randomly
 	std::vector<Record> data = dataset.get_data();
@@ -103,10 +116,12 @@ void Cluster::train(int n_center)
 	std::vector<std::vector<Record> > clusters(n_center);
 	bool change = true;
 	int iter = 0;
+
 	while(change)
 	{
 		iter++;
 		std::cout << "Iter:" << iter << std::endl;
+		out << "Iter " << iter << " SSE ";
 		assign(centers,data,clusterOf,clusters);
 
 		change = false;
@@ -122,6 +137,8 @@ void Cluster::train(int n_center)
 			for(int i=0;i<clusters.size();i++)
 				centers[i] = mean(clusters[i]);	
 		}
+		float sse = SSE(centers,clusters);
+		out << sse << std::endl;
 	}
 	
 	std::cout << "Cluster Done"<<std::endl;
@@ -135,17 +152,20 @@ void Cluster::train(int n_center)
 		//}
 		//std::cout << "****************************"<<std::endl;
 	}
+	_centers = centers;
 	_clusters = clusters;
 	_clusterOf = clusterOf;
+	global_done = true;
 }
-/*
-std::vector<float> Cluster::SSE(const std::vector<Record> &centers,const std::vector<Record>&dataset)const
+
+float Cluster::SSE(const std::vector<Record> &centers,const std::vector<std::vector<Record> > &clusters)const
 {
-	for(int i=0;i<centers;i++)
-	{
-		
-	}
-}*/
+	float res = 0.0;
+	for(int i=0;i<clusters.size();i++)
+		for(int j=0;j<clusters[i].size();j++)
+			res += distance(clusters[i][j],centers[i]);
+	return res;
+}
 void Cluster::assign(const std::vector<Record>&centers,const std::vector<Record>&dataset,std::vector<int>& clusterOf,std::vector<std::vector<Record> > &clusters)const // assign records in dataset to clusters,return cluster ID
 {
 	int n_centers = centers.size();
@@ -212,3 +232,7 @@ void Cluster::draw()const
 	
 }
 
+void Cluster::evaluate()const
+{
+	std::cout << "Kmeans for "<< n_center << std::endl <<"SSE:" << SSE(_centers,_clusters)<< std::endl;
+}

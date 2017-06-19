@@ -11,8 +11,9 @@ GL_FLAGS = -lglut -lGLU -lGL -lX11 -lXext  -lXi -lm
 CFLAGS = -g -I./include
 CFLAGS += `pkg-config --cflags --libs gflags libglog gl`
 CFLAGS += $(GL_FLAGS)
+CFLAGS += -std=c++11
 
-$(BIN)/assignment2:$(OBJ)/input.o $(OBJ)/main.o $(OBJ)/common.o $(OBJ)/cluster.o $(OBJ)/display.o
+$(BIN)/assignment2:$(OBJ)/input.o $(OBJ)/main.o $(OBJ)/common.o $(OBJ)/cluster.o $(OBJ)/display.o $(OBJ)/hierarchy.o $(OBJ)/db.o
 	$(CXX) $^ $(CFLAGS) -o $@ 
 
 $(OBJ)/input.o:$(SRC)/input.cpp
@@ -24,6 +25,10 @@ $(OBJ)/common.o:$(SRC)/common.cpp
 $(OBJ)/cluster.o:$(SRC)/cluster.cpp
 	$(CXX) $^ -c $(CFLAGS) -o $@ 
 $(OBJ)/display.o:$(SRC)/display.cpp
+	$(CXX) $^ -c $(CFLAGS) -o $@ 
+$(OBJ)/hierarchy.o:$(SRC)/hierarchy.cpp
+	$(CXX) $^ -c $(CFLAGS) -o $@ 
+$(OBJ)/db.o:$(SRC)/Density_Evaluate.cpp
 	$(CXX) $^ -c $(CFLAGS) -o $@ 
 
 

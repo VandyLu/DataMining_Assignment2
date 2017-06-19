@@ -44,6 +44,8 @@ void InitMenu() {
 	displayMenu = glutCreateMenu(MenuCallback);
 	//glutAddMenuEntry("Wireframe", WIREFRAME);
 	glutAddMenuEntry("kmeans", KMEANS);
+	glutAddMenuEntry("hierarchy", HIERARCHY);
+	glutAddMenuEntry("dbscan", DBSCAN);
 	glutAddMenuEntry("DEFAULT", DEFAULT);
 
 	mainMenu = glutCreateMenu(MenuCallback);
@@ -103,6 +105,11 @@ void DisplayFunc() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	switch (mode) {
 	case KMEANS: DrawKmeans(); break;
+	case HIERARCHY: DrawHierarchy(); break;
+	case DBSCAN: DrawDbscan(); break;
+					
+					
+
 	}
 
 	glutSwapBuffers();

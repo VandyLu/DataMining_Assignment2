@@ -28,6 +28,7 @@ bool Dataset::load(const char* dbpath)
 		push(index,x,y,z);
 	}
 	in.close();
+	std::cout << "Total records:" << data.size()<<std::endl;
 	return true;
 }
 int Dataset::push(int i,float x,float y,float z)

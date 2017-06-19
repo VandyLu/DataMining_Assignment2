@@ -4,7 +4,7 @@
 #include <GL/glut.h>
 #include <math.h>
 
-enum MODE{KMEANS,DEFAULT};
+enum MODE{KMEANS,HIERARCHY,DBSCAN,DEFAULT};
 extern int mode;
 
 void InitGL();
@@ -20,6 +20,8 @@ void MotionFunc(int x, int y);
 void SetBoundaryBox(float a[3],float b[3]);
 
 void DrawKmeans();
+void DrawHierarchy();
+void DrawDbscan();
 
 
 #endif
