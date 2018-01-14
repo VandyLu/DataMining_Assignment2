@@ -88,8 +88,6 @@ bool HierarchyCluster::cure()
 		//std::cout << "ss"<<i+1 << gl_clusters[i].size()<<std::endl;
 	}
 	proximityMat = calcProx(gl_clusters,gl_centers);
-	//for(int i=0;i<gl_clusters.size();i++)
-	//	std::cout << "ss"<<i+1 << gl_clusters[i].size()<<std::endl;
 
 	int ia,ib;
 	proximityMatMin(ia,ib);
@@ -100,20 +98,7 @@ bool HierarchyCluster::cure()
 		_clusters[ia].push_back(_clusters[ib][i]);
 	}
 	rmItem(_clusters,ib);
-	/*
-	int ibtmp = upper[ib];
-	int iatmp = upper[ia];
-	for(int i=0;i<upper.size();i++)
-	{
-		if(upper[i]==ibtmp)
-			upper[i] = iatmp;
-	}
-	std::cout << ia <<' '<< ib<<std::endl;
-	for(int i=0;i<upper.size();i++)
-		std::cout << upper[i] << ' ';
-	std::cout << std::endl;*/
-
-	//for(int i=0;i<gl_clusters.size();i++)
+		//for(int i=0;i<gl_clusters.size();i++)
 	//	std::cout << i <<" num:" << gl_clusters[i].size()<<std::endl;
 	return true;	
 }
@@ -122,6 +107,7 @@ bool HierarchyCluster::cure()
 // 2. shrink them to _center
 // 3. calc proximityMat again
 // 4. 
+/*
 bool HierarchyCluster::gl_step(int n)
 {
 	for(int q=0;q<n;q++)
@@ -154,7 +140,9 @@ bool HierarchyCluster::gl_step(int n)
 	_clusters = gl_clusters;
 	_clusterOf = gl_clusterOf;
 	return gl_done;
-}		
+}	*/
+
+//for pre-cluster kmeans
 void HierarchyCluster::train(int n_center)
 {
 	global_done = false;
