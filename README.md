@@ -32,3 +32,4 @@ Hierarchy聚类 --n_center 指定初始簇的数量 --n_remain 制定cure保留�
 DBscan聚类<br>
 ./bin/assignment2 --opt dbscan
 
+![kmeans](https://github.com/VandyLu/DataMining_Assignment2/blob/master/kmeans_example.png)
